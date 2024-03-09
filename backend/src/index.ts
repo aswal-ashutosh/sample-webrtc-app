@@ -31,15 +31,6 @@ io.on("connection", (socket) => {
             socket.to(roomId).emit("answer", answer);
         })
         .on("connection:ready", (roomId) => {
-            io.to(roomId).emit("init:sharing");
-        })
-        .on("create:negotiation:offer", ({ roomId, offer }) => {
-            socket.to(roomId).emit("negotiation:offer", offer);
-        })
-        .on("send:negotiation:answer", ({ roomId, answer }) => {
-            socket.to(roomId).emit("negotiation:answer", answer);
-        })
-        .on("negotiation:completed", (roomId) => {
-            io.to(roomId).emit("negotiation:completion");
+            io.to(roomId).emit("add:track");
         });
 });
