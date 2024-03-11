@@ -16,7 +16,7 @@ export default function Room() {
         await pc.setLocalDescription(offer);
         console.log("Creating Offer");
         socket?.emit("create:offer", { roomId, offer });
-    }, [socket]);
+    }, [socket, pc, roomId]);
 
     const handleOffer = useCallback(
         async (offer: RTCSessionDescriptionInit) => {
@@ -27,7 +27,7 @@ export default function Room() {
             console.log("Sending Answer");
             socket?.emit("send:answer", { roomId, answer });
         },
-        [socket]
+        [socket, pc, roomId]
     );
 
     const handleAnswer = useCallback(
@@ -36,7 +36,7 @@ export default function Room() {
             await pc.setRemoteDescription(answer);
             socket?.emit("connection:ready", roomId);
         },
-        [socket]
+        [socket, pc, roomId]
     );
 
     const addTrack = useCallback(
@@ -61,7 +61,7 @@ export default function Room() {
             setLocalStream(localStream);
             addTrack(localStream);
         }
-    }, [localStream]);
+    }, [localStream, addTrack]);
 
     const handleTrack = useCallback(
         (e: RTCTrackEvent) => {
@@ -81,7 +81,7 @@ export default function Room() {
             pc.addEventListener("negotiationneeded", createOffer);
         }
         pc.addEventListener("track", handleTrack);
-    }, [pc]);
+    }, [pc, createOffer, handleTrack, userType]);
 
     useEffect(() => {
         socket?.on("add:track", handleAddTrack);
@@ -101,7 +101,7 @@ export default function Room() {
                 socket?.off("add:track", handleAddTrack);
             };
         }
-    }, [socket, handleAddTrack, createOffer, handleAnswer, handleOffer]);
+    }, [socket, handleAddTrack, createOffer, handleAnswer, handleOffer, roomId, userType]);
 
     return (
         <div>
